@@ -1,0 +1,9 @@
+[package]
+name = "brainfuck"
+version = "0.1.0"
+description = "A brainfuck interpreter in rust"
+keywords = ["brainfuck", "interpreter"]
+repository = "https://github.com/rahulg/brainfuck-rs"
+readme = "README.md"
+license = "MIT"
+authors = ["Rahul AG <r@hul.ag>"]
