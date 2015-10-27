@@ -78,7 +78,13 @@ impl Programme {
 
     fn step(&mut self, ms: &mut MachineState) {
         match self.instructions[self.index] {
-            Instruction::Right => ms.index += 1,
+            Instruction::Right => {
+                ms.index += 1;
+                let len = ms.tape.len();
+                if ms.index >= len {
+                    ms.tape.extend(vec![0u8; len]);
+                }
+            },
             Instruction::Left => ms.index -= 1,
             Instruction::Increment => ms.tape[ms.index] = ms.tape[ms.index].wrapping_add(1),
             Instruction::Decrement => ms.tape[ms.index] = ms.tape[ms.index].wrapping_sub(1),
