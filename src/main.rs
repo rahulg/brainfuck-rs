@@ -124,7 +124,7 @@ fn main() {
     let mut prgm = Programme::parse(buffer);
 
     let mut state = MachineState{
-        tape: vec![0u8; 256],
+        tape: vec![0u8; 8192],
         .. MachineState::default()
     };
 
