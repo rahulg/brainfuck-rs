@@ -80,17 +80,17 @@ impl Programme {
         match self.instructions[self.index] {
             Instruction::Right => ms.index += 1,
             Instruction::Left => ms.index -= 1,
-            Instruction::Increment => ms.cells[ms.index] = ms.cells[ms.index].wrapping_add(1),
-            Instruction::Decrement => ms.cells[ms.index] = ms.cells[ms.index].wrapping_sub(1),
-            Instruction::Output => print!("{}", ms.cells[ms.index] as char),
-            Instruction::Input => ms.cells[ms.index] = match io::stdin().bytes().next() {
+            Instruction::Increment => ms.tape[ms.index] = ms.tape[ms.index].wrapping_add(1),
+            Instruction::Decrement => ms.tape[ms.index] = ms.tape[ms.index].wrapping_sub(1),
+            Instruction::Output => print!("{}", ms.tape[ms.index] as char),
+            Instruction::Input => ms.tape[ms.index] = match io::stdin().bytes().next() {
                 Some(r) => r.unwrap_or(0),
                 None => 0,
             },
-            Instruction::JumpOpen(offset) => if ms.cells[ms.index] == 0 {
+            Instruction::JumpOpen(offset) => if ms.tape[ms.index] == 0 {
                 self.index += offset;
             },
-            Instruction::JumpClose(offset) => if ms.cells[ms.index] != 0 {
+            Instruction::JumpClose(offset) => if ms.tape[ms.index] != 0 {
                 self.index -= offset + 1;
             },
             Instruction::Comment(_) => {},
@@ -109,7 +109,7 @@ impl Programme {
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 struct MachineState {
-    cells: Vec<u8>,
+    tape: Vec<u8>,
     index: usize,
 }
 
@@ -124,7 +124,7 @@ fn main() {
     let mut prgm = Programme::parse(buffer);
 
     let mut state = MachineState{
-        cells: vec![0u8; 256],
+        tape: vec![0u8; 256],
         .. MachineState::default()
     };
 
