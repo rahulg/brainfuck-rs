@@ -1,6 +1,6 @@
 use std::fs::File;
 use std::io;
-use std::io::Read;
+use std::io::{Read, BufRead, BufReader};
 use std::env;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
@@ -41,19 +41,19 @@ struct Programme {
 
 impl Programme {
 
-    fn parse<S>(source: S) -> Programme
-        where S: Into<String>
+    fn parse<R>(r: R) -> Result<Programme, io::Error>
+        where R: BufRead
     {
-
-        let s = source.into();
 
         let mut instructions = Vec::new();
         let mut braces = Vec::new();
 
         let mut instr_id = 0;
-        for c in s.chars() {
+        for b in r.bytes() {
 
-            let mut instr = Instruction::from(c);
+            let c = try!(b);
+
+            let mut instr = Instruction::from(c as char);
 
             match instr {
                 Instruction::Comment(_) => continue,
@@ -72,7 +72,7 @@ impl Programme {
 
         instructions.push(Instruction::End);
 
-        Programme{instructions: instructions, index: 0}
+        Ok(Programme{instructions: instructions, index: 0})
 
     }
 
@@ -123,11 +123,10 @@ fn main() {
 
     let argv: Vec<String> = env::args().collect();
 
-    let mut file = File::open(&argv[1]).unwrap();
-    let mut buffer = String::new();
-    file.read_to_string(&mut buffer).unwrap();
+    let file = File::open(&argv[1]).unwrap();
+    let mut buffer = BufReader::new(file);
 
-    let mut prgm = Programme::parse(buffer);
+    let mut prgm = Programme::parse(&mut buffer).unwrap();
 
     let mut state = MachineState{
         tape: vec![0u8; 8192],
