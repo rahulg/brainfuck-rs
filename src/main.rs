@@ -46,7 +46,7 @@ impl Programme {
     {
 
         let mut instructions = Vec::new();
-        let mut braces = Vec::new();
+        let mut sq_brackets = Vec::new();
 
         let mut instr_id = 0;
         for b in r.bytes() {
@@ -57,9 +57,9 @@ impl Programme {
 
             match instr {
                 Instruction::Comment(_) => continue,
-                Instruction::JumpOpen(_) => braces.push(instr_id),
+                Instruction::JumpOpen(_) => sq_brackets.push(instr_id),
                 Instruction::JumpClose(_) => {
-                    let i_open = braces.pop().unwrap();
+                    let i_open = sq_brackets.pop().unwrap();
                     instructions[i_open] = Instruction::JumpOpen(instr_id - i_open);
                     instr = Instruction::JumpClose(instr_id - i_open);
                 },
